@@ -1,10 +1,24 @@
-import { connectToDatabase } from './utils/database.js'
-import app from './server/server.js'
-const port = 3000
+const express = require('express');
+const bodyParser = require('body-parser');
+const sequelize = require('../BackEnd/config/database');
+const autorRoutes = require('../BackEnd/routes/Autor');
+const livroRoutes = require('../BackEnd/routes/Livro');
+import cors from 'cors';
 
-app.listen(port, async () => {
-  console.log('conectando no banco de dados');
-  await connectToDatabase()
- 
-  console.log(`App running in http://localhost:${port}`)
-})
+const app = express();
+
+app.use(cors());
+
+app.use(bodyParser.json());
+
+app.use('/api/autores', autorRoutes);
+app.use('/api/livros', livroRoutes);
+
+sequelize.sync().then(() => {
+  console.log('Banco de dados conectado e tabelas sincronizadas.');
+  app.listen(3000, () => {
+    console.log('Servidor rodando na porta 3000');
+  });
+}).catch(err => {
+  console.error('Erro ao conectar ao banco de dados:', err);
+});
