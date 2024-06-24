@@ -13,7 +13,11 @@ const createLivro = async (req, res) => {
 const getLivros = async (req, res) => {
   try {
     const livros = await Livro.findAll({
-      include: Autor
+      include: {
+        model: Autor,
+        required: false,
+        // attributes: ['nome'],
+      }
     });
     res.json(livros);
   } catch (err) {
