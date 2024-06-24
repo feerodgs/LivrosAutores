@@ -1,9 +1,9 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import { expect } from 'chai';
-import app from  '../index';
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const app = require('../index.js').default; // Importando o app como default
 
-chai.use(chaiHttp);
+const { expect } = chai;
+
 
 describe('API de Autores', () => {
   it('Deve criar um novo autor', (done) => {
@@ -45,7 +45,6 @@ describe('API de Autores', () => {
   });
 
   it('Deve atualizar um autor', (done) => {
-    // Certifique-se de ajustar o ID do autor para um valor válido no seu banco de dados
     const autorId = 1; 
     chai.request(app)
       .put(`/api/autores/${autorId}`)
@@ -62,7 +61,6 @@ describe('API de Autores', () => {
   });
 
   it('Deve deletar um autor', (done) => {
-    // Certifique-se de ajustar o ID do autor para um valor válido no seu banco de dados
     const autorId = 1; 
     chai.request(app)
       .delete(`/api/autores/${autorId}`)

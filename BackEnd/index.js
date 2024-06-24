@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const sequelize = require('../BackEnd/config/database');
 const autorRoutes = require('../BackEnd/routes/Autor');
 const livroRoutes = require('../BackEnd/routes/Livro');
-import cors from 'cors';
+const cors = require('cors');
 
 const app = express();
 
