@@ -3,8 +3,12 @@ const bodyParser = require('body-parser');
 const sequelize = require('../BackEnd/config/database');
 const autorRoutes = require('../BackEnd/routes/Autor');
 const livroRoutes = require('../BackEnd/routes/Livro');
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors());
+
 app.use(bodyParser.json());
 
 app.use('/api/autores', autorRoutes);
