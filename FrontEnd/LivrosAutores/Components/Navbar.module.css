@@ -1,7 +1,6 @@
 .navbar {
     background-color: #313030;
     overflow: hidden;
-    margin-bottom: 15%;
   }
   
   .navbar ul {
@@ -20,6 +19,7 @@
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
+    font-size: larger;
   }
   
   .navbar li a:hover {

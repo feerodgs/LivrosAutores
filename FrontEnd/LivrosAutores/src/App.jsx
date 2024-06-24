@@ -1,5 +1,5 @@
-import './App.module.css'
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import styles from './App.module.css'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Navbar from '../Components/Navbar';
 import Livros from '../Components/Livros';
@@ -9,13 +9,13 @@ function App() {
 
   return (
     <Router>
-      <div>
+      <main className={styles.main}>
         <Navbar />
         <Routes>
           <Route path="/livros" element={<Livros />} />
           <Route path="/autores" element={<Autores />} />
         </Routes>
-      </div>
+      </main>
     </Router>
   );
 }

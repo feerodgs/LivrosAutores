@@ -1,0 +1,38 @@
+[
+    {
+      "id": 1,
+      "nome": "João Silva",
+      "bio": "João Silva é um autor brasileiro conhecido por seus romances históricos.",
+      "data_nasc": "1980-05-15",
+      "nacionalidade": "Brasileira"
+    },
+    {
+      "id": 2,
+      "nome": "Maria Oliveira",
+      "bio": "Maria Oliveira é uma poetisa portuguesa que ganhou vários prêmios literários.",
+      "data_nasc": "1975-10-22",
+      "nacionalidade": "Portuguesa"
+    },
+    {
+      "id": 3,
+      "nome": "Carlos Mendez",
+      "bio": "Carlos Mendez é um escritor espanhol especializado em contos e ensaios.",
+      "data_nasc": "1990-07-08",
+      "nacionalidade": "Espanhola"
+    },
+    {
+      "id": 4,
+      "nome": "Ana Kowalski",
+      "bio": "Ana Kowalski é uma autora polonesa que escreve ficção científica e fantasia.",
+      "data_nasc": "1985-03-30",
+      "nacionalidade": "Polonesa"
+    },
+    {
+      "id": 5,
+      "nome": "Kenji Tanaka",
+      "bio": "Kenji Tanaka é um novelista japonês renomado por suas obras de mistério e suspense.",
+      "data_nasc": "1978-11-11",
+      "nacionalidade": "Japonesa"
+    }
+  ]
+  
