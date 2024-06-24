@@ -3,24 +3,38 @@ import { useEffect, useState } from "react";
 import { Check, Save, Delete } from '@mui/icons-material';
 import { green, red } from "@mui/material/colors";
 import ConfirmDeleteAutor from "./ConfirmDeleteAutor";
+import axios from 'axios';
 
-const AutorActions = ({ params, rowId, setRowId }) => {
+const AutorActions = ({ params, rowId, setRowId, onDeleteSuccess  }) => {
     const [loading, setLoading] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [success, setSuccess] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
+    const detectChanges = (original, updated) => {
+        const changes = {};
+        for (let key in updated) {
+            if (updated[key] !== original[key]) {
+                changes[key] = updated[key];
+            }
+        }
+        return changes;
+    };
+
     const handleSubmit = async () => {
         setLoading(true);
-        setTimeout(async () => {
-            console.log(params.row);
-            const result = true; // await updateAutor(params.row)
-            if (result) {
-                setSuccess(true);
-                setRowId(null);
+        try {
+            const changes = detectChanges(params.row.original, params.row);
+            if (Object.keys(changes).length > 0) {
+                await axios.put(`http://localhost:3000/api/autores/${params.id}`, changes);
             }
+            setSuccess(true);
+            setRowId(null);
+        } catch (error) {
+            console.error('Erro ao atualizar autor:', error);
+        } finally {
             setLoading(false);
-        }, 1500);
+        }
     };
 
     const handleDelete = () => {
@@ -29,17 +43,17 @@ const AutorActions = ({ params, rowId, setRowId }) => {
 
     const handleDeleteConfirm = async () => {
         setLoadingDelete(true);
-        // Simular exclusão com um setTimeout
-        setTimeout(async () => {
-            console.log(`Delete row with id ${params.id}`);
-            const result = true; // await deleteAutor(params.id)
-            if (result) {
-                setSuccess(true);
-                setRowId(null);
-            }
+        try {
+            await axios.delete(`http://localhost:3000/api/autores/${params.id}`);
+            onDeleteSuccess(params.id); // Chama a função para atualizar a lista de autores após a exclusão
+            setSuccess(true);
+            setRowId(null);
+        } catch (error) {
+            console.error('Erro ao excluir autor:', error);
+        } finally {
             setLoadingDelete(false);
-        }, 1500);
-        setOpenDeleteModal(false);
+            setOpenDeleteModal(false);
+        }
     };
 
     useEffect(() => {
