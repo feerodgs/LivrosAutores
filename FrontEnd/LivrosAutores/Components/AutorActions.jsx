@@ -4,30 +4,21 @@ import { Check, Save, Delete } from '@mui/icons-material';
 import { green, red } from "@mui/material/colors";
 import ConfirmDeleteAutor from "./ConfirmDeleteAutor";
 import axios from 'axios';
+import moment from 'moment';
 
-const AutorActions = ({ params, rowId, setRowId, onDeleteSuccess  }) => {
+const AutorActions = ({ params, rowId, setRowId, onDeleteSuccess, onUpdateSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [success, setSuccess] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
-
-    const detectChanges = (original, updated) => {
-        const changes = {};
-        for (let key in updated) {
-            if (updated[key] !== original[key]) {
-                changes[key] = updated[key];
-            }
-        }
-        return changes;
-    };
+    const [originalRow, setOriginalRow] = useState(params.row);
 
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            const changes = detectChanges(params.row.original, params.row);
-            if (Object.keys(changes).length > 0) {
-                await axios.put(`http://localhost:3000/api/autores/${params.id}`, changes);
-            }
+            console.log(params.row)
+            await axios.put(`http://localhost:3000/api/autores/${params.id}`, params.row);
+            onUpdateSuccess();
             setSuccess(true);
             setRowId(null);
         } catch (error) {
@@ -45,7 +36,7 @@ const AutorActions = ({ params, rowId, setRowId, onDeleteSuccess  }) => {
         setLoadingDelete(true);
         try {
             await axios.delete(`http://localhost:3000/api/autores/${params.id}`);
-            onDeleteSuccess(params.id); // Chama a função para atualizar a lista de autores após a exclusão
+            onDeleteSuccess(params.id);
             setSuccess(true);
             setRowId(null);
         } catch (error) {
@@ -141,6 +132,6 @@ const AutorActions = ({ params, rowId, setRowId, onDeleteSuccess  }) => {
             )}
         </Box>
     );
-}
+};
 
 export default AutorActions;
