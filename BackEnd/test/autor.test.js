@@ -1,72 +1,88 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../index.js').default; // Importando o app como default
+const request = require('supertest');
+const app = require('../index'); // Certifique-se de que 'index.js' exporta corretamente o app do Express
+const sequelize = require('../config/database');
+const Autor = require('../models/autor');
 
-const { expect } = chai;
+beforeAll(async () => {
+  await sequelize.sync({ force: true }); // Sincroniza o banco de dados antes dos testes
+});
 
+afterAll(async () => {
+  await sequelize.close(); // Fecha a conexão com o banco de dados após os testes
+});
 
 describe('API de Autores', () => {
-  it('Deve criar um novo autor', (done) => {
-    chai.request(app)
-      .post('/api/autores')
-      .send({
-        nome: 'Autor Teste',
-        bio: 'Biografia do Autor Teste',
+  describe('/POST autor', () => {
+    it('Deve criar um novo autor', async () => {
+      const res = await request(app)
+        .post('/api/autores')
+        .send({
+          nome: 'Autor Teste',
+          bio: 'Biografia do Autor Teste',
+          data_nasc: '2000-01-01',
+          nacionalidade: 'Brasileira'
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body).toHaveProperty('id');
+    });
+  });
+
+  describe('/GET autores', () => {
+    it('Deve listar todos os autores', async () => {
+      const res = await request(app).get('/api/autores');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toBeInstanceOf(Array);
+    });
+  });
+
+  describe('/GET autor/buscar', () => {
+    it('Deve buscar autores pelo nome', async () => {
+      const res = await request(app)
+        .get('/api/autores/buscar')
+        .query({ nome: 'Autor Teste' });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toBeInstanceOf(Array);
+    });
+  });
+
+  describe('/PUT autor/:id', () => {
+    it('Deve atualizar um autor', async () => {
+      const autor = await Autor.create({
+        nome: 'Autor Original',
+        bio: 'Biografia Original',
         data_nasc: '2000-01-01',
         nacionalidade: 'Brasileira'
-      })
-      .end((err, res) => {
-        expect(res).to.have.status(201);
-        expect(res.body).to.be.an('object');
-        expect(res.body).to.have.property('id');
-        done();
       });
+
+      const res = await request(app)
+        .put(`/api/autores/${autor.id}`)
+        .send({
+          nome: 'Autor Teste Atualizado',
+          bio: 'Biografia do Autor Teste Atualizado'
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body).toHaveProperty('nome', 'Autor Teste Atualizado');
+    });
   });
 
-  it('Deve listar todos os autores', (done) => {
-    chai.request(app)
-      .get('/api/autores')
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body).to.be.an('array');
-        done();
+  describe('/DELETE autor/:id', () => {
+    it('Deve deletar um autor', async () => {
+      const autor = await Autor.create({
+        nome: 'Autor a ser Deletado',
+        bio: 'Biografia a ser Deletada',
+        data_nasc: '2000-01-01',
+        nacionalidade: 'Brasileira'
       });
-  });
 
-  it('Deve buscar autores pelo nome', (done) => {
-    chai.request(app)
-      .get('/api/autores/buscar')
-      .query({ nome: 'Autor Teste' })
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body).to.be.an('array');
-        done();
-      });
-  });
+      const res = await request(app).delete(`/api/autores/${autor.id}`);
 
-  it('Deve atualizar um autor', (done) => {
-    const autorId = 1; 
-    chai.request(app)
-      .put(`/api/autores/${autorId}`)
-      .send({
-        nome: 'Autor Teste Atualizado',
-        bio: 'Biografia do Autor Teste Atualizado'
-      })
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body).to.be.an('object');
-        expect(res.body).to.have.property('nome').eql('Autor Teste Atualizado');
-        done();
-      });
-  });
-
-  it('Deve deletar um autor', (done) => {
-    const autorId = 1; 
-    chai.request(app)
-      .delete(`/api/autores/${autorId}`)
-      .end((err, res) => {
-        expect(res).to.have.status(204);
-        done();
-      });
+      expect(res.status).toBe(204);
+    });
   });
 });
