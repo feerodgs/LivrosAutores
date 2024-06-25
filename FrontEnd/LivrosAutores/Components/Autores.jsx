@@ -5,6 +5,7 @@ import { AddCircleOutline } from '@mui/icons-material';
 import ModalCreateAutor from './ModalCreateAutor';
 import AutorActions from './AutorActions';
 import axios from 'axios';
+import moment from 'moment';
 
 const Autores = () => {
     const [autores, setAutores] = useState([]);
@@ -17,7 +18,7 @@ const Autores = () => {
             { field: 'id', headerName: 'ID', width: 60 },
             { field: 'nome', headerName: 'Nome', width: 250, editable: true },
             { field: 'bio', headerName: 'Biografia', width: 800, editable: true },
-            { field: 'data_nasc', headerName: 'Data de Nascimento', width: 150, editable: true },
+            { field: 'data_nasc', headerName: 'Data de Nascimento', width: 150, editable: false, renderCell: params=>moment(params.row.data_nasc).format('DD/MM/YYYY') },
             { field: 'nacionalidade', headerName: 'Nacionalidade', width: 150, editable: true },
             {
                 field: 'actions',
@@ -27,6 +28,7 @@ const Autores = () => {
                     <AutorActions
                         {...{ params, rowId, setRowId }}
                         onDeleteSuccess={handleDeleteSuccess}
+                        onUpdateSuccess={fetchAutores}
                     />
                 ),
             },
@@ -59,7 +61,7 @@ const Autores = () => {
         setAutores([...autores, newAutor]);
     };
 
-    const handleDeleteSuccess = (deletedAutorId) => {
+    const handleDeleteSuccess = () => {
         fetchAutores();
     };
 
