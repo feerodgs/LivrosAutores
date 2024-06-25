@@ -1,102 +1,121 @@
-import { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { useState, useEffect } from "react";
+import { Box, Button, TextField, Modal, Typography, MenuItem } from "@mui/material";
+import axios from "axios";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 const ModalCreateLivro = ({ open, onClose, onCreate }) => {
-  const [livroInfo, setLivroInfo] = useState({
-    id: null,
-    titulo: '',
-    descricao: '',
-    nomeAutor: '',
-    ano_publicacao: '',
-    genero: '',
-    quantidade: '',
-  });
+  const [titulo, setTitulo] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [autor, setAutor] = useState("");
+  const [ano_publicacao, setAnoPublicacao] = useState("");
+  const [genero, setGenero] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [autores, setAutores] = useState([]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setLivroInfo({ ...livroInfo, [name]: value });
+  useEffect(() => {
+    fetchAutores();
+  }, []);
+
+  const fetchAutores = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/api/autores");
+      setAutores(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar autores:", error);
+    }
   };
 
-  const handleSubmit = () => {
-    onCreate(livroInfo);
-    onClose();
+  const handleCreate = async () => {
+    const novoLivro = {
+      titulo,
+      descricao,
+      autor_id: autor, // Certifique-se de que estamos enviando o AutorId
+      ano_publicacao,
+      genero,
+      quantidade,
+    };
+
+    try {
+      console.log(novoLivro);
+      const response = await axios.post("http://localhost:3000/api/livros", novoLivro);
+      onCreate(response.data);
+      onClose();
+    } catch (error) {
+      console.error("Erro ao criar livro:", error);
+    }
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Criar Novo Livro</DialogTitle>
-      <DialogContent>
+    <Modal open={open} onClose={onClose}>
+      <Box sx={style}>
+        <Typography variant="h6" component="h2">
+          Criar Novo Livro
+        </Typography>
         <TextField
-          autoFocus
-          margin="dense"
-          id="titulo"
-          name="titulo"
           label="Título"
-          type="text"
           fullWidth
-          value={livroInfo.titulo}
-          onChange={handleInputChange}
+          margin="normal"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
         />
         <TextField
-          margin="dense"
-          id="descricao"
-          name="descricao"
           label="Descrição"
-          type="text"
           fullWidth
-          multiline
-          rows={4}
-          value={livroInfo.descricao}
-          onChange={handleInputChange}
+          margin="normal"
+          value={descricao}
+          onChange={(e) => setDescricao(e.target.value)}
         />
         <TextField
-          margin="dense"
-          id="nomeAutor"
-          name="nomeAutor"
-          label="Nome do Autor"
-          type="text"
+          select
+          label="Autor"
           fullWidth
-          value={livroInfo.nomeAutor}
-          onChange={handleInputChange}
-        />
+          margin="normal"
+          value={autor}
+          onChange={(e) => setAutor(e.target.value)}
+        >
+          {autores.map((autor) => (
+            <MenuItem key={autor.id} value={autor.id}>
+              {autor.nome}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
-          margin="dense"
-          id="ano_publicacao"
-          name="ano_publicacao"
           label="Ano de Publicação"
-          type="number"
           fullWidth
-          value={livroInfo.ano_publicacao}
-          onChange={handleInputChange}
+          margin="normal"
+          value={ano_publicacao}
+          onChange={(e) => setAnoPublicacao(e.target.value)}
         />
         <TextField
-          margin="dense"
-          id="genero"
-          name="genero"
           label="Gênero"
-          type="text"
           fullWidth
-          value={livroInfo.genero}
-          onChange={handleInputChange}
+          margin="normal"
+          value={genero}
+          onChange={(e) => setGenero(e.target.value)}
         />
         <TextField
-          margin="dense"
-          id="quantidade"
-          name="quantidade"
           label="Quantidade"
-          type="number"
           fullWidth
-          value={livroInfo.quantidade}
-          onChange={handleInputChange}
+          margin="normal"
+          value={quantidade}
+          onChange={(e) => setQuantidade(e.target.value)}
         />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button onClick={handleCreate} variant="contained" color="primary">
           Criar
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </Modal>
   );
 };
 

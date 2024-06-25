@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { Check, Save, Delete } from '@mui/icons-material';
 import { green, red } from "@mui/material/colors";
 import ConfirmDeleteLivro from "./ConfirmDeleteLivro";
+import axios from 'axios';
 
-const LivrosActions = ({ params, rowId, setRowId }) => {
+const LivrosActions = ({ params, rowId, setRowId, onDeleteSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -12,15 +13,15 @@ const LivrosActions = ({ params, rowId, setRowId }) => {
 
     const handleSubmit = async () => {
         setLoading(true);
-        setTimeout(async () => {
-            console.log(params.row);
-            const result = true; // await updateLivro(params.row)
-            if (result) {
-                setSuccess(true);
-                setRowId(null);
-            }
+        try {
+            await axios.put(`http://localhost:3000/api/livros/${params.id}`, params.row);
+            setSuccess(true);
+            setRowId(null);
+        } catch (error) {
+            console.error('Erro ao atualizar livro:', error);
+        } finally {
             setLoading(false);
-        }, 1500);
+        }
     };
 
     const handleDelete = () => {
@@ -29,17 +30,17 @@ const LivrosActions = ({ params, rowId, setRowId }) => {
 
     const handleDeleteConfirm = async () => {
         setLoadingDelete(true);
-        // Simular exclusão com um setTimeout
-        setTimeout(async () => {
-            console.log(`Delete row with id ${params.id}`);
-            const result = true; // await deleteLivro(params.id)
-            if (result) {
-                setSuccess(true);
-                setRowId(null);
-            }
+        try {
+            await axios.delete(`http://localhost:3000/api/livros/${params.id}`);
+            onDeleteSuccess(params.id)
+            setSuccess(true);
+            setRowId(null);
+        } catch (error) {
+            console.error('Erro ao excluir livro:', error);
+        } finally {
             setLoadingDelete(false);
-        }, 1500);
-        setOpenDeleteModal(false);
+            setOpenDeleteModal(false);
+        }
     };
 
     useEffect(() => {
@@ -105,7 +106,7 @@ const LivrosActions = ({ params, rowId, setRowId }) => {
                 open={openDeleteModal}
                 onClose={() => setOpenDeleteModal(false)}
                 livroInfo={params.row}
-                onDelete={handleDeleteConfirm} // Corrigido para chamar a função handleDeleteConfirm
+                onDelete={handleDeleteConfirm}
             />
 
             {loadingDelete && (
