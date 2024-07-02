@@ -1,14 +1,14 @@
 const request = require('supertest');
-const app = require('../index'); // Certifique-se de que 'index.js' exporta corretamente o app do Express
+const app = require('../index');
 const sequelize = require('../config/database');
 const Autor = require('../models/autor');
 
 beforeAll(async () => {
-  await sequelize.sync({ force: true }); // Sincroniza o banco de dados antes dos testes
+  await sequelize.sync({ force: true });
 });
 
 afterAll(async () => {
-  await sequelize.close(); // Fecha a conexão com o banco de dados após os testes
+  await sequelize.close();
 });
 
 describe('API de Autores', () => {
